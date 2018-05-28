@@ -26,6 +26,7 @@ import java.net.MalformedURLException
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 import com.kapiszewski.mateusz.legoblockcollector.models.*
+import com.kapiszewski.mateusz.legoblockcollector.MyDBHandler
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,7 +35,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupPermissions()
-        downloadData()
+//        downloadData()
+        val inventoriesPart = InventoriesPart(2,3,4,2,5,3,4)
+        val dbHandler = MyDBHandler(this, null, null, 1)
+        dbHandler.addInventoriesPart(inventoriesPart)
+
     }
 
     private val TAG = "storage permission"
