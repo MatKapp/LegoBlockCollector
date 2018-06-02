@@ -10,10 +10,10 @@ class InventoriesPart {
     var itemId: Int = 0
     var quantityInSet: Int = 0
     var quantityInStore: Int = 0
-    var colorId: Int = 0
-    var extra: Int = 0
+    var colorId: Int? = 0
+    var extra: String? = null
 
-    constructor(id: Int, inventoryId: Int, typeId: Int, itemId: Int, quantityInSet: Int, quantityInStore: Int, colorId: Int, extra: Int) {
+    constructor(id: Int, inventoryId: Int, typeId: Int, itemId: Int, quantityInSet: Int, quantityInStore: Int, colorId: Int?, extra: String?) {
         this.id = id
         this.inventoryId = inventoryId
         this.typeId = typeId
@@ -24,7 +24,7 @@ class InventoriesPart {
         this.extra = extra
     }
 
-    constructor(inventoryId: Int, typeId: Int, itemId: Int, quantityInSet: Int, quantityInStore: Int, colorId: Int, extra: Int) {
+    constructor(inventoryId: Int, typeId: Int, itemId: Int, quantityInSet: Int, quantityInStore: Int, colorId: Int?, extra: String?) {
         this.inventoryId = inventoryId
         this.typeId = typeId
         this.itemId = itemId

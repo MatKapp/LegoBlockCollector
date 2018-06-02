@@ -6,19 +6,26 @@ package com.kapiszewski.mateusz.legoblockcollector.models
 class Inventory {
     var id: Int = 0
     var name: String = ""
-    var active: Boolean = false
+    var active: Int = 0
     var lastAccessed: Int = 0
 
-    constructor(id: Int, name: String, active: Boolean, lastAccessed: Int) {
+    constructor(id: Int, name: String, active: Int, lastAccessed: Int) {
         this.id = id
         this.name = name
         this.active = active
         this.lastAccessed = lastAccessed
     }
 
-    constructor(name: String, active: Boolean, lastAccessed: Int) {
+    constructor(name: String, active: Int, lastAccessed: Int) {
         this.name = name
         this.active = active
         this.lastAccessed = lastAccessed
     }
+
+    constructor(name: String, active: Int) {
+        this.name = name
+        this.active = active
+    }
+
+
 }
