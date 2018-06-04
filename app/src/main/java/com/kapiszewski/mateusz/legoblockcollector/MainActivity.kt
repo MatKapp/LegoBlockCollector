@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import com.kapiszewski.mateusz.legoblockcollector.RecyclerViewsFiles.Adapters.InventoryAdapter
 import com.kapiszewski.mateusz.legoblockcollector.models.*
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -24,14 +25,22 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setupPermissions()
         addInventory.setOnClickListener {
-            showActivity()
+            showAddInventoryActivity()
+        }
+        settings_button.setOnClickListener {
+            showSettingsActivity()
         }
 
 
     }
 
-    private fun showActivity() {
+    private fun showAddInventoryActivity() {
         val i = Intent(this, InventoryAddActivity::class.java)
+        ContextCompat.startActivity(this, i, null)
+    }
+
+    private fun showSettingsActivity() {
+        val i = Intent(this, SettingsActivity::class.java)
         ContextCompat.startActivity(this, i, null)
     }
 

@@ -3,9 +3,9 @@ package com.kapiszewski.mateusz.legoblockcollector
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import com.kapiszewski.mateusz.legoblockcollector.RecyclerViewsFiles.Adapters.InventoriesPartAdapter
 import com.kapiszewski.mateusz.legoblockcollector.models.InventoriesPart
 import kotlinx.android.synthetic.main.activity_inventories_part.*
-import kotlinx.android.synthetic.main.activity_main.*
 
 class InventoriesPartActivity : AppCompatActivity() {
 

@@ -21,7 +21,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".InventoriesPartActivity" />
-        <activity android:name=".InventoryAddActivity"></activity>
+        <activity android:name=".InventoryAddActivity" />
+        <activity android:name=".SettingsActivity"></activity>
     </application>
 
 </manifest>

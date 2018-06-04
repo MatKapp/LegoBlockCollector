@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.kapiszewski.mateusz.legoblockcollector.models.InventoriesPart
 import com.kapiszewski.mateusz.legoblockcollector.models.Inventory
+import com.kapiszewski.mateusz.legoblockcollector.models.Singleton
 import kotlinx.android.synthetic.main.activity_add_inventory.*
 import org.w3c.dom.Document
 import org.w3c.dom.Element
@@ -17,6 +18,10 @@ import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
+import android.graphics.Bitmap
+import android.net.Uri
+import com.squareup.picasso.Picasso
+
 
 class InventoryAddActivity : AppCompatActivity() {
 
@@ -52,7 +57,6 @@ class InventoryAddActivity : AppCompatActivity() {
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
-            loadData()
 //            insertInventoriesParts()
         }
 
@@ -114,6 +118,7 @@ class InventoryAddActivity : AppCompatActivity() {
                                                                     , dbHandler.findPartId(itemId), Integer.parseInt(qty)
                                                                     , 0, Integer.parseInt(color), extra)
                                 dbHandler.addInventoriesPart(inventoriesPart)
+                                addImageToInventoriesPart(inventoriesPart.id)
                                 localInventoriesParts?.add(inventoriesPart)
                             }
                         }
@@ -128,7 +133,7 @@ class InventoryAddActivity : AppCompatActivity() {
         override fun doInBackground(vararg params: String?): String? {
             try{
 
-                val url = URL("http://fcds.cs.put.poznan.pl/MyWeb/BL/" + inventoryId.toString()  + ".xml")
+                val url = URL(Singleton.URL + inventoryId.toString()  + ".xml")
                 val connection = url.openConnection()
                 connection.connect()
                 val lendthOfFile = connection.contentLength
@@ -155,6 +160,8 @@ class InventoryAddActivity : AppCompatActivity() {
                 }
                 isStream.close()
                 fos.close()
+                loadData()
+
 
             }catch (e: MalformedURLException){
                 return "Malformed URL"
@@ -167,6 +174,29 @@ class InventoryAddActivity : AppCompatActivity() {
             return "success"
         }
 
+    }
+
+    private fun addImageToInventoriesPart(inventoriesPartId: Int) {
+        try{
+            val dbHandler = MyDBHandler(this, null, null, 1)
+            val code = dbHandler.findInventoriesPartCode(inventoriesPartId)
+            val bitmap = loadImageUsingPicasso("https://www.lego.com/service/bricks/5/2/" + code.toString())
+            dbHandler.addImage(code, bitmap)
+        }
+        catch (e: Exception){
+            println(e.message)
+        }
+
+    }
+
+    private fun loadImageUsingPicasso(imageUrl: String): Bitmap {
+
+        var bitmap = Picasso.with(this)
+                .load(Uri.parse(imageUrl))
+                .get()
+
+
+        return bitmap
     }
 
 }

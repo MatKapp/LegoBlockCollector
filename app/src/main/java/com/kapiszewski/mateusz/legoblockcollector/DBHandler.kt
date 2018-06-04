@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.content.Context
 import android.content.ContentValues
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.kapiszewski.mateusz.legoblockcollector.models.*
+import java.io.ByteArrayOutputStream
 
 class MyDBHandler(context: Context, name: String?,
                   factory: SQLiteDatabase.CursorFactory?, version: Int) : SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
@@ -39,6 +42,7 @@ class MyDBHandler(context: Context, name: String?,
         val TABLE_INVENTORIES = "Inventories"
         val TABLE_ITEMTYPES = "ItemTypes"
         val TABLE_PARTS = "Parts"
+        val TABLE_CODES = "Codes"
 
         val COLUMN_ID = "id"
         val COLUMN_INVENTORYID = "InventoryID"
@@ -52,6 +56,7 @@ class MyDBHandler(context: Context, name: String?,
         val COLUMN_ACTIVE = "Active"
         val COLUMN_LASTACCESSED = "LastAccessed"
         val COLUMN_CODE = "Code"
+        val COLUMN_IMAGE = "Image"
     }
 
     fun addInventoriesPart(inventoriesPart: InventoriesPart) {
@@ -150,6 +155,102 @@ class MyDBHandler(context: Context, name: String?,
 
         db.close()
         return inventory
+    }
+
+    fun findQuantityInStore(inventoriesPartId: Int): Int {
+        val query =
+                "SELECT $COLUMN_QUANTITYINSTORE FROM $TABLE_INVENTORIESPARTS WHERE $COLUMN_ID =  \"$inventoriesPartId\""
+
+        val db = this.writableDatabase
+
+        val cursor = db.rawQuery(query, null)
+
+        var quantityInStore: Int = 0
+
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst()
+            quantityInStore = Integer.parseInt(cursor.getString(0))
+            cursor.close()
+        }
+
+        db.close()
+        return quantityInStore
+    }
+
+    fun findQuantityInSet(inventoriesPartId: Int): Int {
+        val query =
+                "SELECT $COLUMN_QUANTITYINSET FROM $TABLE_INVENTORIESPARTS WHERE $COLUMN_ID =  \"$inventoriesPartId\""
+
+        val db = this.writableDatabase
+
+        val cursor = db.rawQuery(query, null)
+
+        var quantityInSet: Int = 0
+
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst()
+            quantityInSet = Integer.parseInt(cursor.getString(0))
+            cursor.close()
+        }
+
+        db.close()
+        return quantityInSet
+    }
+
+    fun findInventoriesPartCode(inventoriesPartId: Int): Int {
+        val query =
+                "SELECT $TABLE_CODES.$COLUMN_CODE FROM $TABLE_CODES inner join $TABLE_INVENTORIESPARTS on " +
+                        "$TABLE_CODES.$COLUMN_ITEMID = $TABLE_INVENTORIESPARTS.$COLUMN_ITEMID LIMIT 1"
+
+        val db = this.writableDatabase
+
+        val cursor = db.rawQuery(query, null)
+
+        var code: Int = 0
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst()
+            code = Integer.parseInt(cursor.getString(0))
+            cursor.close()
+        }
+
+        db.close()
+        return code
+    }
+
+    fun addImage(code: Int, bitmap: Bitmap){
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        val byteArrayImage = stream.toByteArray()
+        val values = ContentValues()
+        values.put(COLUMN_IMAGE, byteArrayImage)
+
+        val db = this.writableDatabase
+        db.beginTransaction()
+
+        db.update(TABLE_CODES, values,null, null)
+
+        db.setTransactionSuccessful()
+        db.endTransaction()
+        db.close()
+    }
+
+    fun updateInventoriesPartQuantityInStore(inventoriesPartId: Int, difference: Int){
+        val actualQuantityInStore = this.findQuantityInStore(inventoriesPartId)
+        var quantityInStore: Int? = null
+        if (difference == 1){
+            quantityInStore = minOf(this.findQuantityInSet(inventoriesPartId), actualQuantityInStore + difference)
+        }
+        else{
+            quantityInStore = maxOf(0, actualQuantityInStore + difference)
+        }
+        val query = "UPDATE $TABLE_INVENTORIESPARTS set ${COLUMN_QUANTITYINSTORE} = $quantityInStore   where $COLUMN_ID =  \"$inventoriesPartId\""
+
+        val db = this.writableDatabase
+        db.beginTransaction()
+        db.execSQL(query)
+        db.setTransactionSuccessful()
+        db.endTransaction()
+        db.close()
     }
 
     fun findTypeId (typeCode: String?): Int {
@@ -253,5 +354,27 @@ class MyDBHandler(context: Context, name: String?,
         val db = this.writableDatabase
         val cursor = db.rawQuery(query, null)
         return cursor.moveToFirst()
+    }
+
+    fun findImage(inventoriesPartId: Int): Bitmap? {
+        val code = this.findInventoriesPartCode(inventoriesPartId)
+        val query = "SELECT $COLUMN_IMAGE FROM $TABLE_CODES WHERE $COLUMN_CODE =  \"$code\""
+        var byteArray: ByteArray? = null
+        var bitmap: Bitmap? = null
+        val db = this.writableDatabase
+
+        val cursor = db.rawQuery(query, null)
+
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst()
+            byteArray = cursor.getBlob(0)
+            cursor.close()
+            if (byteArray != null) {
+                bitmap = BitmapFactory.decodeByteArray(byteArray,0, byteArray.size)
+            }
+        }
+
+        db.close()
+        return bitmap
     }
 }
