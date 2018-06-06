@@ -270,6 +270,24 @@ class MyDBHandler(context: Context, name: String?,
         return itemTypeId
     }
 
+    fun findTypeCode (typeId: Int?): String {
+        val query =
+                "SELECT $COLUMN_CODE FROM $TABLE_ITEMTYPES WHERE $COLUMN_ID =  \"${typeId.toString()}\""
+        var itemTypeCode = ""
+        val db = this.writableDatabase
+
+        val cursor = db.rawQuery(query, null)
+
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst()
+            itemTypeCode = cursor.getString(0)
+            cursor.close()
+        }
+
+        db.close()
+        return itemTypeCode
+    }
+
     fun findPartId (partCode: String?): Int {
         val query =
                 "SELECT $COLUMN_ID FROM $TABLE_PARTS WHERE $COLUMN_CODE =  \"$partCode\""
