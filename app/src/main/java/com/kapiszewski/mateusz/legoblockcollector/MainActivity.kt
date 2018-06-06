@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         val dbHandler = MyDBHandler(this, null, null, 1)
         inventories = dbHandler.getInventories()
         inventories_list.layoutManager = LinearLayoutManager(this)
+        inventories.sortBy { it.lastAccessed }
         inventories_list.adapter = InventoryAdapter(inventories, this)
         super.onResume()
     }

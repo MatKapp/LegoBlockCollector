@@ -53,9 +53,14 @@ class InventoryAdapter (val items: ArrayList<Inventory>, val context: Context) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder1, position: Int) {
-        holder?.view.setBackgroundColor(Color.parseColor("#FAFAFA"))
-        holder?.inventoryName?.text = items.get(position).name
-        holder?.inventoryId?.text = items.get(position).id.toString()
+        if (items.get(position).active > 0){
+            holder?.view.setBackgroundColor(Color.parseColor("#FAFAFA"))
+        }
+        else{
+            holder?.view.setBackgroundColor(Color.parseColor("#C6C2CA"))
+        }
+        holder?.inventoryName?.text = "Inventory name: " + items.get(position).name
+        holder?.inventoryId?.text = "Inventory id: " + items.get(position).id.toString()
         holder?.view.setOnClickListener {
             showActivity(position)
         }
