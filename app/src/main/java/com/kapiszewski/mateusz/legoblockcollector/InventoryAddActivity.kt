@@ -118,7 +118,7 @@ class InventoryAddActivity : AppCompatActivity() {
                                                                     , dbHandler.findPartId(itemId), Integer.parseInt(qty)
                                                                     , 0, Integer.parseInt(color), extra)
                                 dbHandler.addInventoriesPart(inventoriesPart)
-                                addImageToInventoriesPart(inventoriesPart.id)
+                                addImageToInventoriesPart(inventoriesPart)
                                 localInventoriesParts?.add(inventoriesPart)
                             }
                         }
@@ -176,11 +176,12 @@ class InventoryAddActivity : AppCompatActivity() {
 
     }
 
-    private fun addImageToInventoriesPart(inventoriesPartId: Int) {
+    private fun addImageToInventoriesPart(inventoriesPart: InventoriesPart) {
         try{
             val dbHandler = MyDBHandler(this, null, null, 1)
-            val code = dbHandler.findInventoriesPartCode(inventoriesPartId)
-            val bitmap = loadImageUsingPicasso("https://www.lego.com/service/bricks/5/2/" + code.toString())
+            val code = dbHandler.findInventoriesPartCode(inventoriesPart.itemId)
+            var bitmap = loadImageUsingPicasso("https://www.lego.com/service/bricks/5/2/"+
+                    code.toString())
             dbHandler.addImage(code, bitmap)
         }
         catch (e: Exception){

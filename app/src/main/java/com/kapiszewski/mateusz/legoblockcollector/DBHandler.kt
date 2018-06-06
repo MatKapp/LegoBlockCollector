@@ -197,16 +197,16 @@ class MyDBHandler(context: Context, name: String?,
         return quantityInSet
     }
 
-    fun findInventoriesPartCode(inventoriesPartId: Int): Int {
+    fun findInventoriesPartCode(itemId: Int): Int {
         val query =
-                "SELECT $TABLE_CODES.$COLUMN_CODE FROM $TABLE_CODES inner join $TABLE_INVENTORIESPARTS on " +
-                        "$TABLE_CODES.$COLUMN_ITEMID = $TABLE_INVENTORIESPARTS.$COLUMN_ITEMID LIMIT 1"
+                "SELECT $TABLE_CODES.$COLUMN_CODE FROM $TABLE_CODES " +
+                        "where $TABLE_CODES.$COLUMN_ITEMID=" + itemId.toString() + " LIMIT 1"
 
         val db = this.writableDatabase
 
         val cursor = db.rawQuery(query, null)
 
-        var code: Int = 0
+        var code = 0
         if (cursor.moveToFirst()) {
             cursor.moveToFirst()
             code = Integer.parseInt(cursor.getString(0))
@@ -223,11 +223,10 @@ class MyDBHandler(context: Context, name: String?,
         val byteArrayImage = stream.toByteArray()
         val values = ContentValues()
         values.put(COLUMN_IMAGE, byteArrayImage)
-
         val db = this.writableDatabase
         db.beginTransaction()
 
-        db.update(TABLE_CODES, values,null, null)
+        db.update(TABLE_CODES, values, COLUMN_CODE +"=" + code.toString(), null)
 
         db.setTransactionSuccessful()
         db.endTransaction()
@@ -356,8 +355,8 @@ class MyDBHandler(context: Context, name: String?,
         return cursor.moveToFirst()
     }
 
-    fun findImage(inventoriesPartId: Int): Bitmap? {
-        val code = this.findInventoriesPartCode(inventoriesPartId)
+    fun findImage(itemId: Int): Bitmap? {
+        val code = this.findInventoriesPartCode(itemId)
         val query = "SELECT $COLUMN_IMAGE FROM $TABLE_CODES WHERE $COLUMN_CODE =  \"$code\""
         var byteArray: ByteArray? = null
         var bitmap: Bitmap? = null

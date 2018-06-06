@@ -52,7 +52,7 @@ class InventoriesPartAdapter (val items : ArrayList<InventoriesPart>, val contex
         holderInventoriesPart?.quantityInStore?.text = "Quantity in store: " + items.get(position).quantityInStore.toString()
         holderInventoriesPart?.quantityInSet?.text = "Quantity in set: " + items.get(position).quantityInSet.toString()
         holderInventoriesPart?.view.setBackgroundColor(Color.parseColor("#FAFAFA"))
-        val bitmap = dbHandler.findImage(items.get(position).id)
+        val bitmap = dbHandler.findImage(items.get(position).itemId)
         holderInventoriesPart?.image?.setImageBitmap(bitmap)
         holderInventoriesPart?.view.addButton.setOnClickListener({
             dbHandler.updateInventoriesPartQuantityInStore(items.get(position).id , 1)
